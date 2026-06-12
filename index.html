@@ -1,183 +1,339 @@
-<script>
-        const { Engine, Render, Runner, Bodies, Composite, Events } = Matter;
-
-        const engine = Engine.create({ gravity: { y: 0.12 } }); // Slightly lighter gravity for bubble floatiness
-        const world = engine.world;
-
-        const canvas = document.getElementById('physics-canvas');
-        const render = Render.create({
-            canvas: canvas,
-            engine: engine,
-            options: {
-                width: window.innerWidth,
-                height: window.innerHeight,
-                wireframes: false,
-                background: 'transparent'
-            }
-        });
-
-        Render.run(render);
-        const runner = Runner.create();
-        Runner.run(runner, engine);
-
-        let staticObstacles = [];
-        let bubbleElements = [];
-
-        // Colors from your canvas reference palette (Green, Terracotta, Blue-Grey, Gold)
-        const bubbleBaseColors = [
-            { r: 94, g: 166, b: 122 }, 
-            { r: 212, g: 106, b: 67 }, 
-            { r: 141, g: 182, b: 201 },
-            { r: 238, g: 201, b: 122 }
-        ];
-
-        function createTextObstacles() {
-            staticObstacles.forEach(body => Composite.remove(world, body));
-            staticObstacles = [];
-
-            const elements = document.querySelectorAll('.physics-obstacle');
-            elements.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                const body = Bodies.rectangle(
-                    rect.left + rect.width / 2,
-                    rect.top + rect.height / 2,
-                    rect.width,
-                    rect.height,
-                    { isStatic: true, render: { visible: false } }
-                );
-                staticObstacles.push(body);
-            });
-            Composite.add(world, staticObstacles);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juelle Ashburn | JA.Dev Ent.</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    
+    <style>
+        /* BALANCED VIBRANT PALETTE */
+        :root {
+            --bg-color: #FAF8F5;       /* Muted Soft Cream Base */
+            --text-main: #242D27;      /* Clean Dark Spruce */
+            --text-muted: #566159;     /* Soft Slate Green */
+            --accent-warm: #D46A43;    /* Terracotta Orange */
+            --card-bg: #F4EFEA;        /* Warm Linen Card Backdrop */
+            --font-display: 'Playfair Display', 'Didot', 'Georgia', serif;
+            --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
         }
 
-        function resetBubble(bubble) {
-            Matter.Body.setPosition(bubble, {
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * -200 - 50
-            });
-            // Give them a tiny random sway velocity when respawning
-            Matter.Body.setVelocity(bubble, { x: (Math.random() - 0.5) * 1.5, y: Math.random() * 1 });
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        function spawnBubbles() {
-            for (let i = 0; i < 25; i++) {
-                const radius = Math.random() * 18 + 16; // Perfectly sized bubbles
-                const x = Math.random() * window.innerWidth;
-                const y = Math.random() * -600;
-                const colorObj = bubbleBaseColors[Math.floor(Math.random() * bubbleBaseColors.length)];
-
-                const bubble = Bodies.circle(x, y, radius, {
-                    restitution: 0.85,
-                    friction: 0.01,
-                    frictionAir: 0.02, // Adds a little air resistance so they drift naturally
-                    label: 'bubble',
-                    plugin: {
-                        // Custom data for rendering gradients and highlight shines
-                        bubbleTheme: {
-                            color: colorObj,
-                            seed: Math.random() * 100 // For unique wobble speeds
-                        }
-                    },
-                    render: { visible: false } // We will hand-draw the 3D bubble style over this instead
-                });
-                bubbleElements.push(bubble);
-            }
-            Composite.add(world, bubbleElements);
+        html {
+            scroll-behavior: smooth; /* Smooth scrolling experience */
         }
 
-        function triggerPopVisual(x, y) {
-            const pop = document.createElement('div');
-            pop.classList.add('pop-effect');
-            pop.style.left = `${x}px`;
-            pop.style.top = `${y}px`;
-            document.body.appendChild(pop);
-            setTimeout(() => pop.remove(), 300);
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            padding: 0 2rem;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        Events.on(engine, 'collisionStart', (event) => {
-            event.pairs.forEach(pair => {
-                let targetBubble = null;
-                if (pair.bodyA.label === 'bubble') targetBubble = pair.bodyA;
-                if (pair.bodyB.label === 'bubble') targetBubble = pair.bodyB;
+        /* PHYSICS BACKGROUND */
+        #physics-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
 
-                // 15% pop chance on collisions to keep it smooth and interactive
-                if (targetBubble && Math.random() < 0.15) {
-                    triggerPopVisual(targetBubble.position.x, targetBubble.position.y);
-                    resetBubble(targetBubble);
-                }
-            });
-        });
+        header, main, footer {
+            position: relative;
+            z-index: 2;
+        }
 
-        Events.on(engine, 'afterUpdate', () => {
-            bubbleElements.forEach(bubble => {
-                if (bubble.position.y > window.innerHeight + 50) {
-                    resetBubble(bubble);
-                }
-            });
-        });
+        /* NAVIGATION / LOGO */
+        header {
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(36, 45, 39, 0.1);
+            padding-bottom: 1.5rem;
+        }
 
-        // CUSTOM RENDERING OVERLAY FOR IRIDESCENT 3D BUBBLES
-        Events.on(render, 'afterRender', () => {
-            const context = render.context;
-            const time = engine.timing.timestamp;
-            
-            bubbleElements.forEach(bubble => {
-                const { x, y } = bubble.position;
-                const radius = bubble.circleRadius;
-                const theme = bubble.plugin.bubbleTheme;
-                if (!theme) return;
+        .physics-obstacle {
+            display: inline-block;
+        }
 
-                context.save();
-                context.translate(x, y);
+        .brand-logo h1 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
 
-                // Add a subtle organic jelly-like wobble based on time and seed
-                const wobbleX = 1 + Math.sin(time * 0.005 + theme.seed) * 0.04;
-                const wobbleY = 1 + Math.cos(time * 0.005 + theme.seed) * 0.04;
-                context.scale(wobbleX, wobbleY);
+        .brand-logo span {
+            display: block;
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent-warm);
+            margin-top: 0.25rem;
+        }
 
-                // Create 3D spherical gradient matching your palette tone
-                const gradient = context.createRadialGradient(
-                    -radius * 0.3, -radius * 0.3, radius * 0.1,
-                    0, 0, radius
-                );
-                
-                const c = theme.color;
-                // Translucent edge colors with an iridescent gleam appearance
-                gradient.addColorStop(0, `rgba(255, 255, 255, 0.6)`);
-                gradient.addColorStop(0.2, `rgba(${c.r + 20}, ${c.g + 20}, ${c.b + 20}, 0.35)`);
-                gradient.addColorStop(0.8, `rgba(${c.r}, ${c.g}, ${c.b}, 0.2)`);
-                gradient.addColorStop(1, `rgba(${c.r - 20}, ${c.g - 20}, ${c.b - 20}, 0.45)`);
+        .location-tag {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
 
-                context.fillStyle = gradient;
-                context.beginPath();
-                context.arc(0, 0, radius, 0, 2 * Math.PI);
-                context.fill();
+        /* HERO SECTION */
+        .hero {
+            max-width: 1200px;
+            margin: 8rem auto;
+            text-align: left;
+        }
 
-                // Draw a beautiful white soap-bubble outer ring rim
-                context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-                context.lineWidth = 1.5;
-                context.stroke();
+        .hero h2 {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 400;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            max-width: 900px;
+            margin-bottom: 2rem;
+        }
 
-                // Add a glossy white reflection light highlight near the top left rim
-                context.fillStyle = 'rgba(255, 255, 255, 0.6)';
-                context.beginPath();
-                context.arc(-radius * 0.4, -radius * 0.4, radius * 0.15, 0, 2 * Math.PI);
-                context.fill();
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
 
-                context.restore();
-            });
-        });
+        .cta-button {
+            display: inline-block;
+            background-color: var(--text-main);
+            color: var(--bg-color);
+            padding: 1rem 2rem;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
 
-        window.addEventListener('load', () => {
-            createTextObstacles();
-            spawnBubbles();
-        });
+        .cta-button:hover {
+            background-color: var(--accent-warm);
+            transform: translateY(-2px);
+        }
 
-        window.addEventListener('resize', () => {
-            render.bounds.max.x = window.innerWidth;
-            render.bounds.max.y = window.innerHeight;
-            render.options.width = window.innerWidth;
-            render.options.height = window.innerHeight;
-            createTextObstacles();
-        });
-    </script>
+        /* PORTFOLIO GRID */
+        .portfolio-section {
+            max-width: 1200px;
+            margin: 10rem auto 4rem auto;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 4rem;
+            border-bottom: 1px solid rgba(36, 45, 39, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 4rem;
+        }
+
+        .project-card {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border: 1px solid rgba(212, 106, 67, 0.12); /* Subtle card framing border */
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(36, 45, 39, 0.015); /* Soft premium shadow */
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(36, 45, 39, 0.05);
+        }
+
+        /* Editorial Staggered Layout Feature */
+        .staggered-card {
+            transform: translateY(30px);
+        }
+        .staggered-card:hover {
+            transform: translateY(22px);
+        }
+
+        .image-container {
+            width: 100%;
+            height: 450px;
+            overflow: hidden;
+            background-color: #e5dfd5;
+            margin-bottom: 1.5rem;
+            border-radius: 2px;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s ease;
+        }
+
+        /* Vivid Immersive Image Hover Filter */
+        .project-card:hover .image-container img {
+            transform: scale(1.05);
+            filter: saturate(1.1) brightness(1.02);
+        }
+
+        .project-meta {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-warm);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .project-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 400;
+            margin-bottom: 0.75rem;
+        }
+
+        .project-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        /* POPPING EFFECT STYLING */
+        .pop-effect {
+            position: fixed;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            z-index: 999;
+            animation: burst 0.3s forwards ease-out;
+        }
+
+        @keyframes burst {
+            0% { width: 10px; height: 10px; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { width: 80px; height: 80px; opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+        }
+
+        /* FOOTER / CONTACT */
+        footer {
+            max-width: 1200px;
+            margin: 14rem auto 4rem auto;
+            border-top: 1px solid rgba(36, 45, 39, 0.1);
+            padding-top: 4rem;
+            text-align: center;
+        }
+
+        footer h3 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .email-link {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--text-main);
+            text-decoration: none;
+            border-bottom: 2px solid var(--accent-warm);
+            padding-bottom: 0.25rem;
+            transition: color 0.3s ease;
+        }
+
+        .email-link:hover {
+            color: var(--accent-warm);
+        }
+
+        .social-links {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .social-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--text-main);
+        }
+
+        .back-to-top {
+            display: inline-block;
+            margin-top: 4rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .back-to-top:hover {
+            color: var(--accent-warm);
+        }
+
+        @media (max-width: 992px) {
+            .staggered-card { transform: translateY(0); }
+            .staggered-card:hover { transform: translateY(-8px); }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 0 1rem; }
+            .grid { grid-template-columns: 1fr; gap: 3rem; }
+            .image-container { height: 350px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="physics-canvas"></canvas>
+
+    <header id="top">
+        <div class="brand-logo physics-obstacle">
+            <h1>Juelle Ashburn</h1>
+            <span>JA.Dev Ent.</span>
+        </div>
+        <div class="
