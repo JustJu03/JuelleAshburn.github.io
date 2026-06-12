@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juelle Ashburn | JA.Dev Ent.</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <style>
-        /* LUXURY EARTH PASTELESTHETIC */
+        /* LUXURY EARTH PASTEL ESTHETIC */
         :root {
             --bg-color: #F9F6F0;       /* Warm Cream / Sand */
             --text-main: #2C352E;      /* Deep Olive Wood */
@@ -28,6 +29,24 @@
             font-family: var(--font-sans);
             line-height: 1.6;
             padding: 0 2rem;
+            position: relative;
+        }
+
+        /* PHYSICS CANVAS BACKGROUND */
+        #physics-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1; /* Sits slightly above background but text sits above it */
+            pointer-events: none; /* Let clicks pass through to text if needed */
+        }
+
+        /* HEADER, MAIN, FOOTER MUST SIT ABOVE CANVAS FOR INTERACTION */
+        header, main, footer {
+            position: relative;
+            z-index: 2;
         }
 
         /* NAVIGATION / LOGO BLOCK */
@@ -39,6 +58,11 @@
             align-items: flex-start;
             border-bottom: 1px solid rgba(44, 53, 46, 0.1);
             padding-bottom: 1.5rem;
+        }
+
+        /* Make individual elements "bouncable" physics obstacles */
+        .physics-obstacle {
+            display: inline-block;
         }
 
         .brand-logo h1 {
@@ -67,7 +91,7 @@
             font-weight: 500;
         }
 
-        /* HERO SECTION (Philip Scheinfeld Bold Style) */
+        /* HERO SECTION */
         .hero {
             max-width: 1200px;
             margin: 6rem auto;
@@ -239,7 +263,6 @@
             color: var(--text-main);
         }
 
-        /* RESPONSIVE LAYOUT adjustments */
         @media (max-width: 768px) {
             body { padding: 0 1rem; }
             .grid { grid-template-columns: 1fr; gap: 3rem; }
@@ -249,17 +272,19 @@
 </head>
 <body>
 
+    <canvas id="physics-canvas"></canvas>
+
     <header>
-        <div class="brand-logo">
+        <div class="brand-logo physics-obstacle">
             <h1>Juelle Ashburn</h1>
             <span>JA.Dev Ent.</span>
         </div>
-        <div class="location-tag">South Carolina, USA</div>
+        <div class="location-tag physics-obstacle">South Carolina, USA</div>
     </header>
 
     <main>
         <section class="hero">
-            <h2>Engineering High-Performance Web Experiences Grounded in Creative Visual Storytelling.</h2>
+            <h2 class="physics-obstacle">Engineering High-Performance Web Experiences Grounded in Creative Visual Storytelling.</h2>
             <p>Bringing concepts to life through intentional design layouts, cohesive branding assets, and tailored web solutions built for modern visibility.</p>
             <a href="#contact" class="cta-button">Let's Discuss Your Next Build</a>
         </section>
@@ -268,7 +293,6 @@
             <h3 class="section-title">Selected Works</h3>
             
             <div class="grid">
-                
                 <article class="project-card">
                     <div class="image-container">
                         <img src="natureholics.png" alt="Natureholics Web Concept">
@@ -295,7 +319,6 @@
                     <h4 class="project-title">Let's Go Golfing</h4>
                     <p class="project-desc">An elegant, print-ready invitation suite designed with a sophisticated palette of deep forest greens and organic earth tones. Created to deliver a premium, high-end visual experience for exclusive sporting events.</p>
                 </article>
-
             </div>
         </section>
     </main>
@@ -311,5 +334,96 @@
         </div>
     </footer>
 
+    <script>
+        const { Engine, Render, Runner, Bodies, Composite, FromVertices } = Matter;
+
+        // Initialize Engine
+        const engine = Engine.create({ gravity: { y: 0.2 } }); // Gentle downward gravity
+        const world = engine.world;
+
+        // Setup Canvas matching window size
+        const canvas = document.getElementById('physics-canvas');
+        const render = Render.create({
+            canvas: canvas,
+            engine: engine,
+            options: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                wireframes: false,
+                background: 'transparent'
+            }
+        });
+
+        Render.run(render);
+        const runner = Runner.create();
+        Runner.run(runner, engine);
+
+        let staticObstacles = [];
+
+        // Function to turn real text elements into invisible rigid bodies
+        function createTextObstacles() {
+            // Clear out old boundaries if window resized
+            staticObstacles.forEach(body => Composite.remove(world, body));
+            staticObstacles = [];
+
+            const elements = document.querySelectorAll('.physics-obstacle');
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                // Create a static bounding box matching the text position
+                const body = Bodies.rectangle(
+                    rect.left + rect.width / 2,
+                    rect.top + rect.height / 2,
+                    rect.width,
+                    rect.height,
+                    { isStatic: true, render: { visible: false } }
+                );
+                staticObstacles.push(body);
+            });
+
+            // Add invisible floor at the bottom of the viewport
+            const floor = Bodies.rectangle(window.innerWidth/2, window.innerHeight + 30, window.innerWidth, 60, { isStatic: true, render: { visible: false } });
+            staticObstacles.push(floor);
+
+            Composite.add(world, staticObstacles);
+        }
+
+        // Spawn soft-toned bouncing balls randomly from the top
+        const colors = ['rgba(140, 109, 88, 0.25)', 'rgba(90, 101, 93, 0.25)', 'rgba(44, 53, 46, 0.15)'];
+        
+        function spawnBalls() {
+            const balls = [];
+            for (let i = 0; i < 20; i++) {
+                const radius = Math.random() * 20 + 15; // Mixed sizes
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * -300; // Start offscreen above
+                
+                const ball = Bodies.circle(x, y, radius, {
+                    restitution: 0.7, // Bounciness factor
+                    friction: 0.05,
+                    render: {
+                        fillStyle: colors[Math.floor(Math.random() * colors.length)]
+                    }
+                });
+                balls.push(ball);
+            }
+            Composite.add(world, balls);
+        }
+
+        // Run setup
+        window.addEventListener('load', () => {
+            createTextObstacles();
+            spawnBalls();
+        });
+
+        // Keep bounds perfectly synced if client changes screen size
+        window.addEventListener('resize', () => {
+            render.bounds.max.x = window.innerWidth;
+            render.bounds.max.y = window.innerHeight;
+            render.options.width = window.innerWidth;
+            render.options.height = window.innerHeight;
+            Matter.Body.setAllStatic = false;
+            createTextObstacles();
+        });
+    </script>
 </body>
 </html>
