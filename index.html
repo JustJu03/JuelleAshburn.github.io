@@ -4,87 +4,356 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juelle Ashburn | JA.Dev Ent.</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
     <style>
-        body {
-            background-color: #FAF8F5;
-            color: #242D27;
-            font-family: 'Georgia', serif;
-            line-height: 1.6;
-            padding: 2rem;
-            margin: 0;
+        /* BALANCED VIBRANT PALETTE */
+        :root {
+            --bg-color: #FAF8F5;       /* Muted Soft Cream Base */
+            --text-main: #242D27;      /* Clean Dark Spruce */
+            --text-muted: #566159;     /* Soft Slate Green */
+            --accent-warm: #D46A43;    /* Terracotta Orange */
+            --card-bg: #F4EFEA;        /* Warm Linen Card Backdrop */
+            --font-display: 'Playfair Display', 'Didot', 'Georgia', serif;
+            --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
         }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth; /* Smooth scrolling experience */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            padding: 0 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* NAVIGATION / LOGO */
         header {
             max-width: 1200px;
-            margin: 0 auto 4rem auto;
+            margin: 2rem auto;
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
             border-bottom: 1px solid rgba(36, 45, 39, 0.1);
-            padding-bottom: 1rem;
+            padding-bottom: 1.5rem;
         }
+
+        .brand-logo h1 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+
+        .brand-logo span {
+            display: block;
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent-warm);
+            margin-top: 0.25rem;
+        }
+
+        .location-tag {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* HERO SECTION */
         .hero {
             max-width: 1200px;
-            margin: 4rem auto;
+            margin: 8rem auto;
+            text-align: left;
         }
-        h1 { font-size: 2rem; margin: 0; }
-        h2 { font-size: 3rem; font-weight: normal; margin-bottom: 1.5rem; }
-        p { color: #566159; max-width: 600px; font-size: 1.2rem; }
+
+        .hero h2 {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 400;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            max-width: 900px;
+            margin-bottom: 2rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--text-main);
+            color: var(--bg-color);
+            padding: 1rem 2rem;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: var(--accent-warm);
+            transform: translateY(-2px);
+        }
+
+        /* PORTFOLIO GRID */
+        .portfolio-section {
+            max-width: 1200px;
+            margin: 10rem auto 4rem auto;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 4rem;
+            border-bottom: 1px solid rgba(36, 45, 39, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 4rem auto;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 4rem;
         }
-        .card {
-            background: #F4EFEA;
+
+        .project-card {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--card-bg);
             padding: 1.5rem;
-            border: 1px solid rgba(212, 106, 67, 0.15);
+            border: 1px solid rgba(212, 106, 67, 0.12); /* Subtle card framing border */
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(36, 45, 39, 0.015); /* Soft premium shadow */
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
         }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(36, 45, 39, 0.05);
+        }
+
+        /* Editorial Staggered Layout Feature */
+        .staggered-card {
+            transform: translateY(30px);
+        }
+        .staggered-card:hover {
+            transform: translateY(22px);
+        }
+
+        .image-container {
+            width: 100%;
+            height: 450px;
+            overflow: hidden;
+            background-color: #e5dfd5;
+            margin-bottom: 1.5rem;
+            border-radius: 2px;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s ease;
+        }
+
+        /* Vivid Immersive Image Hover Filter */
+        .project-card:hover .image-container img {
+            transform: scale(1.05);
+            filter: saturate(1.1) brightness(1.02);
+        }
+
+        .project-meta {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-warm);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .project-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 400;
+            margin-bottom: 0.75rem;
+        }
+
+        .project-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        /* FOOTER / CONTACT */
         footer {
-            text-align: center;
-            margin-top: 6rem;
-            padding-top: 2rem;
+            max-width: 1200px;
+            margin: 14rem auto 4rem auto;
             border-top: 1px solid rgba(36, 45, 39, 0.1);
+            padding-top: 4rem;
+            text-align: center;
         }
-        a { color: #D46A43; text-decoration: none; font-weight: bold; }
+
+        footer h3 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .email-link {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--text-main);
+            text-decoration: none;
+            border-bottom: 2px solid var(--accent-warm);
+            padding-bottom: 0.25rem;
+            transition: color 0.3s ease;
+        }
+
+        .email-link:hover {
+            color: var(--accent-warm);
+        }
+
+        .social-links {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .social-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--text-main);
+        }
+
+        .back-to-top {
+            display: inline-block;
+            margin-top: 4rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .back-to-top:hover {
+            color: var(--accent-warm);
+        }
+
+        @media (max-width: 992px) {
+            .staggered-card { transform: translateY(0); }
+            .staggered-card:hover { transform: translateY(-8px); }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 0 1rem; }
+            .grid { grid-template-columns: 1fr; gap: 3rem; }
+            .image-container { height: 350px; }
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <div>
+    <header id="top">
+        <div class="brand-logo">
             <h1>Juelle Ashburn</h1>
-            <small style="color: #D46A43; letter-spacing: 2px;">JA.DEV ENT.</small>
+            <span>JA.Dev Ent.</span>
         </div>
-        <div>South Carolina, USA</div>
+        <div class="location-tag">South Carolina, USA</div>
     </header>
 
-    <main class="hero">
-        <h2>Engineering High-Performance Web Experiences Grounded in Creative Visual Storytelling.</h2>
-        <p>Bringing concepts to life through intentional design layouts, cohesive branding assets, and tailored web solutions built for modern visibility.</p>
+    <main>
+        <section class="hero">
+            <h2>Engineering High-Performance Web Experiences Grounded in Creative Visual Storytelling.</h2>
+            <p>Bringing concepts to life through intentional design layouts, cohesive branding assets, and tailored web solutions built for modern visibility.</p>
+            <a href="#contact" class="cta-button">Let's Discuss Your Next Build</a>
+        </section>
+
+        <section class="portfolio-section">
+            <h3 class="section-title">Selected Works</h3>
+            
+            <div class="grid">
+                <article class="project-card">
+                    <div class="image-container">
+                        <img src="natureholics.png" alt="Natureholics Web Concept">
+                    </div>
+                    <div class="project-meta">Concept UI Design &bull; Canva</div>
+                    <h4 class="project-title">Natureholics</h4>
+                    <p class="project-desc">A minimalist, immersive concept design for a modern online plant boutique. Focused on seamless user flows, clean layouts, and an organic aesthetic that bridges the gap between nature and digital commerce.</p>
+                </article>
+
+                <article class="project-card staggered-card">
+                    <div class="image-container">
+                        <img src="einko.png" alt="Einko Bars Package Design">
+                    </div>
+                    <div class="project-meta">Product & Brand Design &bull; Canva</div>
+                    <h4 class="project-title">Einko Bars</h4>
+                    <p class="project-desc">A complete conceptual product and packaging design for an eco-conscious, nature-focused wellness bar. Developed with an emphasis on bold, sustainable visual branding and modern consumer appeal.</p>
+                </article>
+
+                <article class="project-card">
+                    <div class="image-container">
+                        <img src="golfing.png" alt="Let's Go Golfing Design">
+                    </div>
+                    <div class="project-meta">Graphic Design &bull; Canva</div>
+                    <h4 class="project-title">Let's Go Golfing</h4>
+                    <p class="project-desc">An elegant, print-ready invitation suite designed with a sophisticated palette of deep forest greens and organic earth tones. Created to deliver a premium, high-end visual experience for exclusive sporting events.</p>
+                </article>
+            </div>
+        </section>
     </main>
 
-    <section class="grid">
-        <div class="card">
-            <h3 style="color: #D46A43;">Natureholics</h3>
-            <p>Concept UI Design &bull; Canva</p>
-            <p>A minimalist, immersive concept design for a modern online plant boutique.</p>
-        </div>
-        <div class="card">
-            <h3 style="color: #D46A43;">Einko Bars</h3>
-            <p>Product & Brand Design &bull; Canva</p>
-            <p>A complete conceptual product and packaging design for an eco-conscious wellness bar.</p>
-        </div>
-        <div class="card">
-            <h3 style="color: #D46A43;">Let's Go Golfing</h3>
-            <p>Graphic Design &bull; Canva</p>
-            <p>An elegant, print-ready invitation suite designed with a sophisticated palette.</p>
-        </div>
-    </section>
-
-    <footer>
+    <footer id="contact">
         <h3>Available for Select Partnerships</h3>
-        <p><a href="mailto:Juelleashburn@gmail.com">Juelleashburn@gmail.com</a></p>
+        <p>Currently accepting tailored digital design and front-end development projects.</p>
+        <a href="mailto:Juelleashburn@gmail.com" class="email-link">Juelleashburn@gmail.com</a>
+        
+        <div class="social-links">
+            <a href="https://www.linkedin.com" target="_blank">LinkedIn Profile</a>
+            <a href="mailto:Juelleashburn@gmail.com">Direct Email</a>
+        </div>
+        
+        <div>
+            <a href="#top" class="back-to-top">↑ Back To Top</a>
+        </div>
     </footer>
 
 </body>
