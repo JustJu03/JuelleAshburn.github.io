@@ -8,13 +8,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <style>
-        /* BALANCED VIBRANT PALETTE */
+        /* COLOR PALETTE INSPIRED BY YOUR ART REFERENCE */
         :root {
             --bg-color: #FAF8F5;       /* Muted Soft Cream Base */
             --text-main: #242D27;      /* Clean Dark Spruce */
             --text-muted: #566159;     /* Soft Slate Green */
             --accent-warm: #D46A43;    /* Terracotta Orange */
-            --card-bg: #F4EFEA;        /* Warm Linen Card Backdrop */
+            --accent-water: #8DB6C9;   /* Soft Sky/Water Blue */
+            --lily-green: #5EA67A;     /* Fresh Lily Pad Green */
             --font-display: 'Playfair Display', 'Didot', 'Georgia', serif;
             --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
         }
@@ -26,7 +27,7 @@
         }
 
         html {
-            scroll-behavior: smooth; /* Smooth scrolling experience */
+            scroll-behavior: smooth;
         }
 
         body {
@@ -35,7 +36,6 @@
             font-family: var(--font-sans);
             line-height: 1.6;
             padding: 0 2rem;
-            position: relative;
             overflow-x: hidden;
         }
 
@@ -60,7 +60,6 @@
 
         .brand-logo span {
             display: block;
-            font-family: var(--font-sans);
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 3px;
@@ -76,28 +75,51 @@
             font-weight: 500;
         }
 
-        /* HERO SECTION */
-        .hero {
+        /* INTERACTIVE HERO CONTAINER */
+        .hero-container {
             max-width: 1200px;
-            margin: 8rem auto;
-            text-align: left;
+            margin: 4rem auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
         }
 
-        .hero h2 {
+        .hero-text h2 {
             font-family: var(--font-display);
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
             font-weight: 400;
             line-height: 1.1;
             letter-spacing: -1px;
-            max-width: 900px;
             margin-bottom: 2rem;
         }
 
-        .hero p {
+        .hero-text p {
             font-size: 1.1rem;
             color: var(--text-muted);
-            max-width: 600px;
             margin-bottom: 3rem;
+            max-width: 520px;
+        }
+
+        /* RECTANGULAR INTERACTIVE WATER WINDOW */
+        .water-window {
+            position: relative;
+            width: 100%;
+            height: 550px;
+            background-color: #EBF3F5;
+            border-radius: 4px;
+            box-shadow: 0 15px 35px rgba(36, 45, 39, 0.04);
+            overflow: hidden;
+            border: 1px solid rgba(141, 182, 201, 0.2);
+        }
+
+        #water-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
         }
 
         .cta-button {
@@ -118,100 +140,10 @@
             transform: translateY(-2px);
         }
 
-        /* PORTFOLIO GRID */
-        .portfolio-section {
-            max-width: 1200px;
-            margin: 10rem auto 4rem auto;
-        }
-
-        .section-title {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            font-weight: 400;
-            margin-bottom: 4rem;
-            border-bottom: 1px solid rgba(36, 45, 39, 0.1);
-            padding-bottom: 0.5rem;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 4rem;
-        }
-
-        .project-card {
-            display: flex;
-            flex-direction: column;
-            background-color: var(--card-bg);
-            padding: 1.5rem;
-            border: 1px solid rgba(212, 106, 67, 0.12); /* Subtle card framing border */
-            border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(36, 45, 39, 0.015); /* Soft premium shadow */
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
-        }
-
-        .project-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(36, 45, 39, 0.05);
-        }
-
-        /* Editorial Staggered Layout Feature */
-        .staggered-card {
-            transform: translateY(30px);
-        }
-        .staggered-card:hover {
-            transform: translateY(22px);
-        }
-
-        .image-container {
-            width: 100%;
-            height: 450px;
-            overflow: hidden;
-            background-color: #e5dfd5;
-            margin-bottom: 1.5rem;
-            border-radius: 2px;
-        }
-
-        .image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s ease;
-        }
-
-        /* Vivid Immersive Image Hover Filter */
-        .project-card:hover .image-container img {
-            transform: scale(1.05);
-            filter: saturate(1.1) brightness(1.02);
-        }
-
-        .project-meta {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent-warm);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .project-title {
-            font-family: var(--font-display);
-            font-size: 1.6rem;
-            font-weight: 400;
-            margin-bottom: 0.75rem;
-        }
-
-        .project-desc {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-            flex-grow: 1;
-        }
-
         /* FOOTER / CONTACT */
         footer {
             max-width: 1200px;
-            margin: 14rem auto 4rem auto;
+            margin: 10rem auto 4rem auto;
             border-top: 1px solid rgba(36, 45, 39, 0.1);
             padding-top: 4rem;
             text-align: center;
@@ -219,7 +151,7 @@
 
         footer h3 {
             font-family: var(--font-display);
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 400;
             margin-bottom: 1rem;
         }
@@ -234,128 +166,3 @@
             font-size: 1.8rem;
             color: var(--text-main);
             text-decoration: none;
-            border-bottom: 2px solid var(--accent-warm);
-            padding-bottom: 0.25rem;
-            transition: color 0.3s ease;
-        }
-
-        .email-link:hover {
-            color: var(--accent-warm);
-        }
-
-        .social-links {
-            margin-top: 3rem;
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .social-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .social-links a:hover {
-            color: var(--text-main);
-        }
-
-        .back-to-top {
-            display: inline-block;
-            margin-top: 4rem;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        
-        .back-to-top:hover {
-            color: var(--accent-warm);
-        }
-
-        @media (max-width: 992px) {
-            .staggered-card { transform: translateY(0); }
-            .staggered-card:hover { transform: translateY(-8px); }
-        }
-
-        @media (max-width: 768px) {
-            body { padding: 0 1rem; }
-            .grid { grid-template-columns: 1fr; gap: 3rem; }
-            .image-container { height: 350px; }
-        }
-    </style>
-</head>
-<body>
-
-    <header id="top">
-        <div class="brand-logo">
-            <h1>Juelle Ashburn</h1>
-            <span>JA.Dev Ent.</span>
-        </div>
-        <div class="location-tag">South Carolina, USA</div>
-    </header>
-
-    <main>
-        <section class="hero">
-            <h2>Engineering High-Performance Web Experiences Grounded in Creative Visual Storytelling.</h2>
-            <p>Bringing concepts to life through intentional design layouts, cohesive branding assets, and tailored web solutions built for modern visibility.</p>
-            <a href="#contact" class="cta-button">Let's Discuss Your Next Build</a>
-        </section>
-
-        <section class="portfolio-section">
-            <h3 class="section-title">Selected Works</h3>
-            
-            <div class="grid">
-                <article class="project-card">
-                    <div class="image-container">
-                        <img src="natureholics.png" alt="Natureholics Web Concept">
-                    </div>
-                    <div class="project-meta">Concept UI Design &bull; Canva</div>
-                    <h4 class="project-title">Natureholics</h4>
-                    <p class="project-desc">A minimalist, immersive concept design for a modern online plant boutique. Focused on seamless user flows, clean layouts, and an organic aesthetic that bridges the gap between nature and digital commerce.</p>
-                </article>
-
-                <article class="project-card staggered-card">
-                    <div class="image-container">
-                        <img src="einko.png" alt="Einko Bars Package Design">
-                    </div>
-                    <div class="project-meta">Product & Brand Design &bull; Canva</div>
-                    <h4 class="project-title">Einko Bars</h4>
-                    <p class="project-desc">A complete conceptual product and packaging design for an eco-conscious, nature-focused wellness bar. Developed with an emphasis on bold, sustainable visual branding and modern consumer appeal.</p>
-                </article>
-
-                <article class="project-card">
-                    <div class="image-container">
-                        <img src="golfing.png" alt="Let's Go Golfing Design">
-                    </div>
-                    <div class="project-meta">Graphic Design &bull; Canva</div>
-                    <h4 class="project-title">Let's Go Golfing</h4>
-                    <p class="project-desc">An elegant, print-ready invitation suite designed with a sophisticated palette of deep forest greens and organic earth tones. Created to deliver a premium, high-end visual experience for exclusive sporting events.</p>
-                </article>
-            </div>
-        </section>
-    </main>
-
-    <footer id="contact">
-        <h3>Available for Select Partnerships</h3>
-        <p>Currently accepting tailored digital design and front-end development projects.</p>
-        <a href="mailto:Juelleashburn@gmail.com" class="email-link">Juelleashburn@gmail.com</a>
-        
-        <div class="social-links">
-            <a href="https://www.linkedin.com" target="_blank">LinkedIn Profile</a>
-            <a href="mailto:Juelleashburn@gmail.com">Direct Email</a>
-        </div>
-        
-        <div>
-            <a href="#top" class="back-to-top">↑ Back To Top</a>
-        </div>
-    </footer>
-
-</body>
-</html>
-
